@@ -28,6 +28,15 @@ OUTPUT_FILE = "whisky-news.json"
 
 USER_AGENT = "Mozilla/5.0 (compatible; ScottishDelightNewsBot/1.0)"
 
+# Titles containing any of these (case-insensitive) are dropped as known
+# false positives, e.g. "Bourbon virus" is a real tick-borne illness with
+# no connection to bourbon whiskey.
+EXCLUDE_PATTERNS = [
+    "bourbon virus",
+    "tick-borne",
+    "testosterone",
+]
+
 
 def fetch_feed(query):
     url = "https://news.google.com/rss/search?q=" + quote(query) + "&hl=en-US&gl=US&ceid=US:en"
@@ -72,6 +81,8 @@ def parse_feed(xml_bytes):
 
         title = clean_title(raw_title, source_name)
         if not title or not link:
+            continue
+        if any(pattern in title.lower() for pattern in EXCLUDE_PATTERNS):
             continue
 
         items.append({
