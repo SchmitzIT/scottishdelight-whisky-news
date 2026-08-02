@@ -1,0 +1,41 @@
+name: Review false positives
+
+on:
+  workflow_run:
+    workflows: ["Fetch whisky news"]
+    types:
+      - completed
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  review:
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run false-positive review
+        run: python review_false_positives.py
+
+      - name: Commit updated exclusions if changed
+        run: |
+          git config user.name "whisky-news-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add exclude_patterns.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-add new false-positive exclusion pattern(s)"
+            git push
+          fi
