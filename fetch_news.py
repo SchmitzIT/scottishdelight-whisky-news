@@ -30,12 +30,26 @@ USER_AGENT = "Mozilla/5.0 (compatible; ScottishDelightNewsBot/1.0)"
 
 # Titles containing any of these (case-insensitive) are dropped as known
 # false positives, e.g. "Bourbon virus" is a real tick-borne illness with
-# no connection to bourbon whiskey.
-EXCLUDE_PATTERNS = [
+# no connection to bourbon whiskey. Loaded from exclude_patterns.json so
+# the weekly review job can update it without editing this file.
+EXCLUDE_PATTERNS_FILE = "exclude_patterns.json"
+
+DEFAULT_EXCLUDE_PATTERNS = [
     "bourbon virus",
     "tick-borne",
     "testosterone",
 ]
+
+
+def load_exclude_patterns():
+    try:
+        with open(EXCLUDE_PATTERNS_FILE, "r", encoding="utf-8") as f:
+            patterns = json.load(f)
+        if isinstance(patterns, list) and all(isinstance(p, str) for p in patterns):
+            return patterns
+    except (FileNotFoundError, json.JSONDecodeError):
+        pass
+    return DEFAULT_EXCLUDE_PATTERNS
 
 
 def fetch_feed(query):
@@ -56,7 +70,7 @@ def clean_title(raw_title, source_name):
     return re.sub(r"\s+-\s+[^-]+$", "", raw_title).strip()
 
 
-def parse_feed(xml_bytes):
+def parse_feed(xml_bytes, exclude_patterns):
     items = []
     root = ET.fromstring(xml_bytes)
     for item in root.findall("./channel/item"):
@@ -82,7 +96,7 @@ def parse_feed(xml_bytes):
         title = clean_title(raw_title, source_name)
         if not title or not link:
             continue
-        if any(pattern in title.lower() for pattern in EXCLUDE_PATTERNS):
+        if any(pattern in title.lower() for pattern in exclude_patterns):
             continue
 
         items.append({
@@ -107,13 +121,14 @@ def dedupe(items):
 
 
 def main():
+    exclude_patterns = load_exclude_patterns()
     cutoff = datetime.now(timezone.utc) - timedelta(hours=MAX_AGE_HOURS)
     all_items = []
 
     for query in QUERIES:
         try:
             xml_bytes = fetch_feed(query)
-            all_items.extend(parse_feed(xml_bytes))
+            all_items.extend(parse_feed(xml_bytes, exclude_patterns))
         except Exception as exc:
             print("Warning: failed to fetch/parse query " + repr(query) + ": " + str(exc), file=sys.stderr)
 
