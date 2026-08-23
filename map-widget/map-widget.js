@@ -328,23 +328,20 @@
 
         var color = statusColor(d.status);
         var marker = L.marker([d.lat, d.lng], { icon: pinIcon(color) });
-        marker.bindTooltip(d.name, {
+        var labelContent = d.link
+          ? '<a href="' + d.link + '" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">' + d.name + '</a>'
+          : d.name;
+        marker.bindTooltip(labelContent, {
           permanent: true,
           direction: 'right',
           offset: [10, 0],
-          className: 'sd-pin-label'
+          className: 'sd-pin-label',
+          interactive: true  // required for the tooltip to receive clicks at all --
+                              // Leaflet's own CSS sets pointer-events:none on tooltips
+                              // by default, only .leaflet-tooltip.leaflet-interactive
+                              // gets pointer-events:auto (verified against leaflet.css
+                              // v1.9.4 directly, not assumed)
         });
-        if (d.link) {
-          marker.on('tooltipopen', function (e) {
-            var el = e.tooltip.getElement();
-            if (el) {
-              el.onclick = function (evt) {
-                evt.stopPropagation();
-                global.open(d.link, '_blank', 'noopener');
-              };
-            }
-          });
-        }
         var linkHtml = d.link
           ? '<a class="sd-popup-link" href="' + d.link + '">View distillery profile &rarr;</a>'
           : '';
