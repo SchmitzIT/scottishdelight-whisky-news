@@ -1,0 +1,103 @@
+/* ScottishDelight.com distillery map widget -- shared stylesheet
+   Loaded once, used by every regional/sub-regional/Scotland-wide map.
+   Class-based (not ID-based) so multiple map instances can safely
+   coexist on the same page. */
+
+.sd-map-wrap {
+  --sd-bg: #f7f4ef;
+  --sd-panel: #ffffff;
+  --sd-ink: #2b241c;
+  --sd-muted: #6b6355;
+  --sd-accent: #7a1f2b;
+  --sd-gold: #b8862f;
+  --sd-border: #e2dccf;
+  --sd-green: #2e7d32;
+  --sd-yellow: #c9a227;
+  --sd-grey: #8a8378;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  color: var(--sd-ink);
+  background: var(--sd-bg);
+  border: 1px solid var(--sd-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.sd-map-wrap * { box-sizing: border-box; }
+
+.sd-map-header {
+  padding: 14px 20px;
+  background: var(--sd-panel);
+  border-bottom: 2px solid var(--sd-gold);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.sd-map-header h2 { font-size: 18px; margin: 0; letter-spacing: 0.02em; color: var(--sd-accent); }
+.sd-map-header .sd-sub { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: var(--sd-muted); margin-top: 2px; }
+
+.sd-filter-bar { font-family: 'Helvetica Neue', Arial, sans-serif; display: flex; align-items: center; gap: 14px; font-size: 13px; flex-wrap: wrap; }
+.sd-filter-group { display: flex; align-items: center; gap: 6px; }
+.sd-filter-bar label { color: var(--sd-muted); }
+.sd-filter-bar select {
+  font-family: inherit; font-size: 13px; padding: 6px 10px;
+  border: 1px solid var(--sd-border); border-radius: 6px; background: var(--sd-bg); color: var(--sd-ink);
+}
+.sd-hint { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11px; color: var(--sd-muted); }
+.sd-legend { display: flex; align-items: center; gap: 12px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11px; color: var(--sd-muted); }
+.sd-legend-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+.sd-count-badge { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: var(--sd-muted); }
+
+.sd-map-canvas { height: 600px; width: 100%; background: #dfe7e3; position: relative; }
+.sd-status-msg {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; color: var(--sd-muted);
+  background: var(--sd-bg); z-index: 500;
+}
+.sd-status-msg.sd-error { color: var(--sd-accent); text-align: center; padding: 20px; }
+
+.sd-distillery-pin {
+  width: 16px; height: 16px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+.sd-cluster-badge {
+  background: var(--sd-accent);
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+}
+.sd-pin-label {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sd-ink);
+  background: rgba(255,255,255,0.94);
+  padding: 2px 7px;
+  border: 1px solid var(--sd-border);
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  cursor: pointer;
+}
+.sd-pin-label::before { display: none; }
+
+.sd-map-wrap .leaflet-popup-content-wrapper { border-radius: 6px; font-family: 'Helvetica Neue', Arial, sans-serif; }
+.sd-popup-title { font-family: 'Georgia', serif; font-weight: bold; color: var(--sd-accent); font-size: 15px; margin-bottom: 4px; }
+.sd-popup-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+.sd-popup-style {
+  display: inline-block; font-size: 11px; color: var(--sd-gold);
+  border: 1px solid var(--sd-gold); border-radius: 10px; padding: 1px 8px;
+}
+.sd-popup-status {
+  display: inline-block; font-size: 11px; color: #fff;
+  border-radius: 10px; padding: 1px 8px;
+}
+.sd-popup-link { display: inline-block; margin-top: 8px; font-size: 12px; color: var(--sd-accent); }
